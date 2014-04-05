@@ -27,13 +27,15 @@ entryTransactions <- Cl(SPY)
 colnames(entryTransactions) <- "TxnPrice"
 entryTransactions$TxnQty <- floor(maxPosValue/entryTransactions$TxnPrice)
 entryTransactions$TxnFees <- (-1)*txnFees
-# Remove last one in order not to have open trades
-entryTransactions <- head(entryTransactions, -1)
+
 exitTransactions <- Cl(SPY)
 colnames(exitTransactions) <- "TxnPrice"
 exitTransactions$TxnQty <- (-1)*lag.xts(entryTransactions$TxnQty)
 exitTransactions$TxnFees <- (-1)*txnFees
-# Remove first one since there is no entry yet (from previous close)
+
+# Remove last entry transaction in order not to have open trades
+entryTransactions <- head(entryTransactions, -1)
+# Remove first exit transaction since there is no entry yet (from previous close)
 exitTransactions <- exitTransactions[-1, ]
 
 transactions <- rbind(exitTransactions, entryTransactions)
